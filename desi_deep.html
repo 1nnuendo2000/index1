@@ -1,0 +1,2062 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurazione Staff - Turni Reparto</title>
+    <style>
+        /* ==================== CSS VARIABLES ==================== */
+        :root {
+            /* Colori principali */
+            --color-primary: #007bff;
+            --color-primary-dark: #0056b3;
+            --color-success: #28a745;
+            --color-success-dark: #218838;
+            --color-warning: #ffc107;
+            --color-info: #17a2b8;
+            --color-info-dark: #138496;
+            --color-danger: #dc3545;
+            
+            /* Colori flag */
+            --color-preferenza: #c8e6c9;
+            --color-preferenza-border: #81c784;
+            --color-preferenza-text: #2e7d32;
+            
+            --color-obbligo: #80cbc4;
+            --color-obbligo-border: #26a69a;
+            --color-obbligo-text: #00695c;
+            
+            --color-veto: #ef9a9a;
+            --color-veto-border: #e57373;
+            --color-veto-text: #c62828;
+            
+            /* Colori background */
+            --color-bg-light: #fafafa;
+            --color-bg-white: #ffffff;
+            --color-bg-gray: #f8f9fa;
+            --color-bg-yellow: #fff3cd;
+            --color-bg-orange: #fff3e0;
+            --color-bg-green: #e8f5e9;
+            --color-bg-blue: #e3f2fd;
+            --color-bg-light-blue: #e1f5fe;
+            
+            /* Bordi */
+            --border-radius-sm: 4px;
+            --border-radius-md: 6px;
+            --border-radius-lg: 8px;
+            --border-radius-xl: 12px;
+            
+            /* Spaziature */
+            --spacing-xs: 5px;
+            --spacing-sm: 10px;
+            --spacing-md: 15px;
+            --spacing-lg: 20px;
+            --spacing-xl: 30px;
+            --spacing-xxl: 40px;
+            
+            /* Ombre */
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+            --shadow-md: 0 2px 10px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 12px rgba(0,0,0,0.1);
+            
+            /* Transizioni */
+            --transition-fast: 0.2s;
+            --transition-normal: 0.3s;
+            --transition-slow: 0.5s;
+        }
+
+        /* ==================== RESET & BASE ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--color-bg-light);
+            color: #333;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        /* ==================== UTILITY CLASSES ==================== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .focus-visible {
+            outline: 3px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        /* ==================== LAYOUT ==================== */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: var(--color-bg-white);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-md);
+            padding: var(--spacing-xl);
+            padding-top: 100px; /* Spazio per navbar sticky */
+        }
+
+        /* ==================== NAVBAR ==================== */
+        .navbar-sticky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-bg-white);
+            box-shadow: var(--shadow-md);
+            z-index: 1000;
+            padding: var(--spacing-md) var(--spacing-lg);
+            display: flex;
+            gap: var(--spacing-lg);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .navbar-sticky label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .navbar-sticky select {
+            padding: 8px 12px;
+            border: 2px solid var(--color-primary);
+            border-radius: var(--border-radius-md);
+            font-size: 1em;
+            min-width: 200px;
+            cursor: pointer;
+        }
+
+        /* ==================== HEADER ==================== */
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: var(--spacing-xl);
+            font-size: 2.2em;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: var(--spacing-lg);
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--color-bg-yellow);
+            border-radius: var(--border-radius-lg);
+            flex-wrap: wrap;
+        }
+
+        /* ==================== CONTROLS ==================== */
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .control-group label {
+            font-weight: 600;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        select, input[type="number"], input[type="date"] {
+            padding: 8px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: var(--border-radius-md);
+            font-size: 1em;
+            background: var(--color-bg-white);
+            transition: border-color var(--transition-fast);
+        }
+
+        select:focus, input[type="number"]:focus, input[type="date"]:focus {
+            border-color: var(--color-primary);
+            outline: none;
+        }
+
+        /* ==================== BUTTONS ==================== */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+
+        .btn:focus-visible {
+            outline: 3px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: var(--color-bg-white);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+        }
+
+        .btn-success {
+            background: var(--color-success);
+            color: var(--color-bg-white);
+        }
+
+        .btn-success:hover {
+            background: var(--color-success-dark);
+        }
+
+        .btn-warning {
+            background: var(--color-warning);
+            color: #333;
+        }
+
+        .btn-info {
+            background: var(--color-info);
+            color: var(--color-bg-white);
+        }
+
+        .btn-info:hover {
+            background: var(--color-info-dark);
+        }
+
+        /* ==================== MEDICO CARD ==================== */
+        .medico-card {
+            background: var(--color-bg-gray);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            border: 2px solid #e0e0e0;
+        }
+
+        .medico-card.consulente {
+            background: #fff8e1;
+            border-color: var(--color-warning);
+        }
+
+        .medico-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 3px solid #dee2e6;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+
+        .medico-header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .btn-turni-fissi {
+            padding: 8px 16px;
+            background: var(--color-info);
+            color: var(--color-bg-white);
+            border: none;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all var(--transition-normal);
+        }
+
+        .btn-turni-fissi:hover {
+            background: var(--color-info-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-turni-fissi:focus-visible {
+            outline: 3px solid var(--color-info);
+            outline-offset: 2px;
+        }
+
+        .medico-name {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .medico-stats {
+            display: flex;
+            gap: var(--spacing-md);
+            font-size: 0.9em;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--color-bg-white);
+            border-radius: var(--border-radius-md);
+            border: 2px solid #dee2e6;
+            min-width: 80px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 1.1em;
+            color: var(--color-primary);
+        }
+
+        /* ==================== SECTIONS ==================== */
+        .section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: var(--spacing-md);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--color-bg-white);
+            border-radius: var(--border-radius-md);
+            border-left: 5px solid var(--color-primary);
+        }
+
+        .section-title.festivi {
+            border-left-color: #ff9800;
+            background: var(--color-bg-orange);
+        }
+
+        .section-title.settimana {
+            border-left-color: var(--color-success);
+            background: var(--color-bg-green);
+        }
+
+        /* ==================== GIORNI GRID ==================== */
+        .giorni-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .giorno-card {
+            background: var(--color-bg-white);
+            border: 2px solid #dee2e6;
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-md);
+            transition: all var(--transition-normal);
+        }
+
+        .giorno-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .giorno-card.festivo {
+            background: var(--color-bg-orange);
+            border-color: #ff9800;
+        }
+
+        .giorno-card.weekend {
+            background: var(--color-bg-blue);
+            border-color: #2196f3;
+        }
+
+        .giorno-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .giorno-data {
+            font-weight: 700;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+
+        .giorno-nome {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: 600;
+        }
+
+        /* ==================== FASCE ==================== */
+        .fasce-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            margin-bottom: 12px;
+        }
+
+        .fascia-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fascia-label {
+            font-weight: 600;
+            font-size: 0.95em;
+            width: 25px;
+            color: #495057;
+        }
+
+        .fascia-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .flag-btn {
+            padding: 6px 12px;
+            border: 2px solid transparent;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all var(--transition-fast);
+            background: #f5f5f5;
+            color: #999;
+        }
+
+        .flag-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .flag-btn:focus-visible {
+            outline: 3px solid var(--color-primary);
+            outline-offset: 1px;
+        }
+
+        .flag-btn.active.preferenza {
+            background: var(--color-preferenza);
+            border-color: var(--color-preferenza-border);
+            color: var(--color-preferenza-text);
+        }
+
+        .flag-btn.active.obbligo {
+            background: var(--color-obbligo);
+            border-color: var(--color-obbligo-border);
+            color: var(--color-obbligo-text);
+        }
+
+        .flag-btn.active.veto {
+            background: var(--color-veto);
+            border-color: var(--color-veto-border);
+            color: var(--color-veto-text);
+        }
+
+        /* ==================== CONGEDI ==================== */
+        .congedo-container {
+            padding-top: var(--spacing-sm);
+            border-top: 1px solid #dee2e6;
+            margin-top: var(--spacing-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .alpi-label,
+        .congedo-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: var(--border-radius-md);
+            transition: all var(--transition-fast);
+            font-size: 0.9em;
+        }
+
+        .alpi-label:hover,
+        .congedo-label:hover {
+            background: #f0f0f0;
+        }
+
+        .alpi-label input[type="checkbox"],
+        .congedo-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .alpi-label:focus-within,
+        .congedo-label:focus-within {
+            outline: 2px solid var(--color-primary);
+        }
+
+        .alpi-label.active {
+            background: var(--color-bg-light-blue);
+            border: 2px solid #03a9f4;
+            font-weight: 600;
+        }
+
+        .congedo-label.active {
+            background: var(--color-bg-yellow);
+            border: 2px solid var(--color-warning);
+            font-weight: 600;
+        }
+
+        /* ==================== COMPORTAMENTO ==================== */
+        .comportamento-box {
+            background: var(--color-bg-white);
+            border: 2px solid #dee2e6;
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .comportamento-title {
+            font-weight: 600;
+            font-size: 1em;
+            color: #495057;
+            margin-bottom: 12px;
+        }
+
+        .comportamento-row {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .comportamento-row label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+        }
+
+        .comportamento-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .comportamento-row input[type="number"] {
+            width: 60px;
+            padding: 4px 8px;
+            border: 2px solid #dee2e6;
+            border-radius: var(--border-radius-sm);
+        }
+
+        /* ==================== ACTIONS ==================== */
+        .actions {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xxl);
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: var(--spacing-lg);
+            background: var(--color-bg-gray);
+            border-radius: var(--border-radius-lg);
+        }
+
+        .scroll-container {
+            max-height: 80vh;
+            overflow-y: auto;
+            padding-right: 10px;
+            scroll-margin-top: 100px;
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 768px) {
+            .giorni-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .medico-stats {
+                flex-wrap: wrap;
+            }
+            
+            .stat-item {
+                min-width: 70px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--spacing-md);
+                padding-top: 80px;
+            }
+            
+            .header-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .medico-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* ==================== MODAL ==================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-md);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--color-bg-white);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-xl);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .modal-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+            padding: var(--spacing-xs);
+            border-radius: var(--border-radius-sm);
+        }
+
+        .modal-close:hover {
+            color: #333;
+            background: #f0f0f0;
+        }
+
+        .modal-close:focus-visible {
+            outline: 3px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .modal-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .modal-field label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .modal-field select,
+        .modal-field input[type="date"] {
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: var(--border-radius-md);
+            font-size: 1em;
+        }
+
+        .modal-tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .modal-tab {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all var(--transition-fast);
+        }
+
+        .modal-tab:hover {
+            color: var(--color-primary);
+        }
+
+        .modal-tab.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .modal-tab-content {
+            display: none;
+        }
+
+        .modal-tab-content.active {
+            display: block;
+        }
+
+        .modal-message {
+            padding: var(--spacing-md);
+            background: var(--color-bg-green);
+            border: 2px solid var(--color-success);
+            border-radius: var(--border-radius-md);
+            margin-bottom: var(--spacing-md);
+            display: none;
+        }
+
+        .modal-message.success {
+            display: block;
+            background: var(--color-bg-green);
+            border-color: var(--color-success);
+        }
+
+        .modal-message.error {
+            display: block;
+            background: #f8d7da;
+            border-color: var(--color-danger);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+        }
+
+        .btn-apply {
+            padding: 12px 20px;
+            background: var(--color-success);
+            color: var(--color-bg-white);
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1em;
+            flex: 1;
+        }
+
+        .btn-apply:hover {
+            background: var(--color-success-dark);
+        }
+
+        .btn-apply:focus-visible {
+            outline: 3px solid var(--color-success);
+            outline-offset: 2px;
+        }
+
+        .btn-cancel {
+            padding: 12px 20px;
+            background: #6c757d;
+            color: var(--color-bg-white);
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        .btn-cancel:focus-visible {
+            outline: 3px solid #6c757d;
+            outline-offset: 2px;
+        }
+
+        .btn-apply-another {
+            padding: 12px 20px;
+            background: var(--color-info);
+            color: var(--color-bg-white);
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1em;
+            flex: 1;
+        }
+
+        .btn-apply-another:hover {
+            background: var(--color-info-dark);
+        }
+
+        .btn-apply-another:focus-visible {
+            outline: 3px solid var(--color-info);
+            outline-offset: 2px;
+        }
+
+        .modal-footer-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar sticky -->
+    <div class="navbar-sticky" role="navigation" aria-label="Navigazione principale">
+        <label for="navMedicoSelect" id="navMedicoLabel">🔍 Vai a medico:</label>
+        <select id="navMedicoSelect" 
+                aria-labelledby="navMedicoLabel"
+                aria-describedby="navMedicoDesc"
+                onchange="app.scrollToMedico(this.value)">
+            <option value="">-- Seleziona --</option>
+        </select>
+        <span id="navMedicoDesc" class="sr-only">Seleziona un medico per scorrere direttamente alla sua configurazione</span>
+        <span style="margin-left: auto; color: #666; font-size: 0.9em;">
+            💾 Auto-save attivo | ⌨️ Ctrl+S: Salva | Ctrl+E: Esporta
+        </span>
+    </div>
+
+    <div class="container">
+        <h1>👨‍⚕️ Configurazione Staff - Disponibilità Turni</h1>
+
+        <div class="header-controls">
+            <div class="control-group">
+                <label for="meseSelect">Mese</label>
+                <select id="meseSelect" aria-describedby="meseDesc">
+                    <option value="1">Gennaio</option>
+                    <option value="2">Febbraio</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Aprile</option>
+                    <option value="5">Maggio</option>
+                    <option value="6">Giugno</option>
+                    <option value="7">Luglio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Settimana</option>
+                    <option value="10">Ottobre</option>
+                    <option value="11">Novembre</option>
+                    <option value="12">Dicembre</option>
+                </select>
+                <span id="meseDesc" class="sr-only">Seleziona il mese per cui configurare i turni</span>
+            </div>
+
+            <div class="control-group">
+                <label for="annoInput">Anno</label>
+                <input type="number" 
+                       id="annoInput" 
+                       value="2025" 
+                       min="2024" 
+                       max="2030"
+                       aria-describedby="annoDesc">
+                <span id="annoDesc" class="sr-only">Inserisci l'anno per cui configurare i turni</span>
+            </div>
+
+            <button class="btn btn-primary" 
+                    onclick="app.generaConfigurazione()"
+                    aria-label="Genera nuova configurazione per il mese e anno selezionati">
+                🔄 Genera Configurazione
+            </button>
+            <button class="btn btn-info" 
+                    onclick="app.importaJSON()"
+                    aria-label="Importa configurazione da file JSON">
+                📥 Importa JSON
+            </button>
+        </div>
+
+        <div class="scroll-container" id="configContainer" role="main" aria-label="Configurazione turni medici"></div>
+
+        <div class="actions">
+            <button class="btn btn-success" 
+                    onclick="app.salvaConfigurazione()"
+                    aria-label="Salva la configurazione corrente">
+                💾 Salva Configurazione
+            </button>
+            <button class="btn btn-warning" 
+                    onclick="app.esportaJSON()"
+                    aria-label="Esporta la configurazione corrente in formato JSON">
+                📤 Esporta JSON
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal turni fissi -->
+    <div class="modal-overlay" 
+         id="modalTurniFissi" 
+         role="dialog" 
+         aria-modal="true"
+         aria-labelledby="modalTitle"
+         aria-describedby="modalDesc"
+         tabindex="-1">
+        <div class="modal-content" role="document">
+            <div class="modal-header">
+                <h2 id="modalTitle" class="modal-title">⚙️ Configura Turni Fissi - <span id="modalMedicoName"></span></h2>
+                <button class="modal-close" 
+                        onclick="app.chiudiModalTurniFissi()"
+                        aria-label="Chiudi finestra di dialogo">
+                    ✕
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-message" id="modalMessage"></div>
+                
+                <div class="modal-tabs">
+                    <button class="modal-tab active" onclick="app.switchModalTab('settimanale')" id="tabSettimanale">
+                        Per Giorno Settimana
+                    </button>
+                    <button class="modal-tab" onclick="app.switchModalTab('specifico')" id="tabSpecifico">
+                        Per Data Specifica
+                    </button>
+                </div>
+                
+                <div id="tabContentSettimanale" class="modal-tab-content active">
+                    <p id="modalDesc" style="color: #666; margin-bottom: 15px;">
+                        Applica automaticamente lo stesso flag a tutti i giorni del mese selezionati.
+                    </p>
+                    
+                    <div class="modal-field">
+                        <label for="modalGiorno">Giorno della settimana</label>
+                        <select id="modalGiorno" aria-describedby="giornoDesc">
+                            <option value="1">Lunedì</option>
+                            <option value="2">Martedì</option>
+                            <option value="3">Mercoledì</option>
+                            <option value="4">Giovedì</option>
+                            <option value="5">Venerdì</option>
+                            <option value="6">Sabato</option>
+                            <option value="0">Domenica</option>
+                        </select>
+                        <span id="giornoDesc" class="sr-only">Seleziona il giorno della settimana per cui applicare i turni fissi</span>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="modalFascia">Fascia oraria</label>
+                        <select id="modalFascia" aria-describedby="fasciaDesc">
+                            <option value="M">Mattina</option>
+                            <option value="P">Pomeriggio</option>
+                            <option value="N">Notte</option>
+                        </select>
+                        <span id="fasciaDesc" class="sr-only">Seleziona la fascia oraria per cui applicare i turni fissi</span>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="modalTipo">Tipo di flag</label>
+                        <select id="modalTipo" aria-describedby="tipoDesc">
+                            <option value="preferenza">🟢 Preferenza</option>
+                            <option value="obbligo">💎 Obbligo</option>
+                            <option value="veto">🔴 Veto</option>
+                        </select>
+                        <span id="tipoDesc" class="sr-only">Seleziona il tipo di flag da applicare</span>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button class="btn-apply" 
+                                onclick="app.applicaTurniFissiSettimanali()"
+                                aria-label="Applica i turni fissi selezionati a tutti i giorni corrispondenti">
+                            ✓ Applica a tutti i giorni
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="tabContentSpecifico" class="modal-tab-content">
+                    <p style="color: #666; margin-bottom: 15px;">
+                        Applica il flag a una data specifica del mese.
+                    </p>
+                    
+                    <div class="modal-field">
+                        <label for="modalDataSpecifica">Data specifica</label>
+                        <input type="date" 
+                               id="modalDataSpecifica" 
+                               aria-describedby="dataSpecificaDesc">
+                        <span id="dataSpecificaDesc" class="sr-only">Seleziona la data specifica per applicare il turno fisso</span>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="modalFasciaSpecifica">Fascia oraria</label>
+                        <select id="modalFasciaSpecifica" aria-describedby="fasciaSpecificaDesc">
+                            <option value="M">Mattina</option>
+                            <option value="P">Pomeriggio</option>
+                            <option value="N">Notte</option>
+                        </select>
+                        <span id="fasciaSpecificaDesc" class="sr-only">Seleziona la fascia oraria per la data specifica</span>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="modalTipoSpecifico">Tipo di flag</label>
+                        <select id="modalTipoSpecifico" aria-describedby="tipoSpecificoDesc">
+                            <option value="preferenza">🟢 Preferenza</option>
+                            <option value="obbligo">💎 Obbligo</option>
+                            <option value="veto">🔴 Veto</option>
+                        </select>
+                        <span id="tipoSpecificoDesc" class="sr-only">Seleziona il tipo di flag da applicare per la data specifica</span>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button class="btn-apply" 
+                                onclick="app.applicaTurnoFissoSpecifico()"
+                                aria-label="Applica il turno fisso alla data specificata">
+                            ✓ Applica a questa data
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="modal-footer-actions">
+                    <button class="btn-apply-another" 
+                            onclick="app.applicaETieniAperto()"
+                            aria-label="Applica e mantieni aperto per configurare altri turni">
+                        ↻ Applica e continua
+                    </button>
+                    <button class="btn-cancel" 
+                            onclick="app.chiudiModalTurniFissi()"
+                            aria-label="Chiudi la finestra di dialogo">
+                        Chiudi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== APPLICAZIONE ====================
+        const app = {
+            // Dati
+            mediciUfficiali: [
+                'Amodio', 'Cardelia', 'DiDonna', 'Fummo', 'Ferrari', 
+                'Fusco', 'Genova', 'Imperatore', 'MaffeiA', 'MaffeiV', 
+                'Piscitiello', 'Sorrentino', 'Spadera'
+            ],
+            
+            consulenti: ['Gallo', 'DeFilippis', 'Amodeo'],
+            
+            festivitaFisse: [
+                {mese: 1, giorno: 1, nome: 'Capodanno'},
+                {mese: 1, giorno: 6, nome: 'Epifania'},
+                {mese: 4, giorno: 25, nome: 'Liberazione'},
+                {mese: 5, giorno: 1, nome: 'Festa Lavoro'},
+                {mese: 6, giorno: 2, nome: 'Festa Repubblica'},
+                {mese: 8, giorno: 15, nome: 'Ferragosto'},
+                {mese: 11, giorno: 1, nome: 'Ognissanti'},
+                {mese: 12, giorno: 8, nome: 'Immacolata'},
+                {mese: 12, giorno: 25, nome: 'Natale'},
+                {mese: 12, giorno: 26, nome: 'Santo Stefano'}
+            ],
+            
+            configurazione: {},
+            calendario: [],
+            currentModalMedico: null,
+            lastAppliedConfig: null,
+            
+            // Struttura comportamento settimanale completa
+            strutturaComportamentoCompleta: {
+                mattineConsecutive: { attivo: false, max: 3 },
+                pomeriggiConsecutivi: { attivo: false, max: 3 },
+                mpConsecutivi: { attivo: false, max: 2 },
+                nottiConsecutive: { attivo: false, max: 2 }
+            },
+            
+            // Inizializzazione
+            init() {
+                const oggi = new Date();
+                document.getElementById('meseSelect').value = oggi.getMonth() + 1;
+                document.getElementById('annoInput').value = oggi.getFullYear();
+                this.caricaDaLocalStorage();
+                this.generaConfigurazione();
+                this.popolaNavbar();
+                this.setupAccessibility();
+                this.setupModalDate();
+            },
+            
+            // Setup data nel modal
+            setupModalDate() {
+                const oggi = new Date();
+                const mese = document.getElementById('meseSelect').value;
+                const anno = document.getElementById('annoInput').value;
+                const dataInput = document.getElementById('modalDataSpecifica');
+                
+                // Formatta la data come YYYY-MM-DD
+                const dataFormattata = `${anno}-${String(mese).padStart(2, '0')}-01`;
+                dataInput.value = dataFormattata;
+                dataInput.min = `${anno}-${String(mese).padStart(2, '0')}-01`;
+                dataInput.max = `${anno}-${String(mese).padStart(2, '0')}-${new Date(anno, mese, 0).getDate()}`;
+            },
+            
+            // Setup accessibilità
+            setupAccessibility() {
+                // Gestione focus per modal
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.chiudiModalTurniFissi();
+                    }
+                    
+                    // Trap focus nel modal
+                    if (e.key === 'Tab' && document.getElementById('modalTurniFissi').classList.contains('active')) {
+                        this.trapModalFocus(e);
+                    }
+                });
+            },
+            
+            // Trap focus nel modal
+            trapModalFocus(e) {
+                const modal = document.getElementById('modalTurniFissi');
+                const focusableElements = modal.querySelectorAll(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                );
+                const firstElement = focusableElements[0];
+                const lastElement = focusableElements[focusableElements.length - 1];
+                
+                if (e.shiftKey && document.activeElement === firstElement) {
+                    lastElement.focus();
+                    e.preventDefault();
+                } else if (!e.shiftKey && document.activeElement === lastElement) {
+                    firstElement.focus();
+                    e.preventDefault();
+                }
+            },
+            
+            // Switch tab modal
+            switchModalTab(tabId) {
+                // Nascondi tutti i tab
+                document.querySelectorAll('.modal-tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelectorAll('.modal-tab').forEach(tabBtn => {
+                    tabBtn.classList.remove('active');
+                });
+                
+                // Mostra tab selezionato
+                document.getElementById(`tabContent${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`).classList.add('active');
+                document.getElementById(`tab${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`).classList.add('active');
+            },
+            
+            // Popola navbar
+            popolaNavbar() {
+                const select = document.getElementById('navMedicoSelect');
+                select.innerHTML = '<option value="">-- Seleziona medico --</option>';
+                
+                const tuttiMedici = [...this.mediciUfficiali, ...this.consulenti];
+                tuttiMedici.forEach(medico => {
+                    const option = document.createElement('option');
+                    option.value = medico;
+                    option.textContent = medico;
+                    select.appendChild(option);
+                });
+            },
+            
+            // Scroll a medico
+            scrollToMedico(medico) {
+                if (!medico) return;
+                
+                const cards = document.querySelectorAll('.medico-card');
+                cards.forEach(card => {
+                    const name = card.querySelector('.medico-name');
+                    if (name && name.textContent === medico) {
+                        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        card.style.border = '3px solid var(--color-primary)';
+                        
+                        // Annuncia al screen reader
+                        const announcement = document.createElement('div');
+                        announcement.setAttribute('aria-live', 'polite');
+                        announcement.setAttribute('aria-atomic', 'true');
+                        announcement.className = 'sr-only';
+                        announcement.textContent = `Navigato a configurazione per ${medico}`;
+                        document.body.appendChild(announcement);
+                        setTimeout(() => document.body.removeChild(announcement), 1000);
+                        
+                        setTimeout(() => {
+                            card.style.border = '';
+                        }, 2000);
+                    }
+                });
+            },
+            
+            // Calcolo calendario
+            calcolaCalendario(mese, anno) {
+                const giorni = [];
+                const primoGiorno = new Date(anno, mese - 1, 1);
+                const ultimoGiorno = new Date(anno, mese, 0);
+                
+                let numeroSettimana = 1;
+                let ultimoGiornoSettimana = primoGiorno.getDay();
+
+                for (let d = new Date(primoGiorno); d <= ultimoGiorno; d.setDate(d.getDate() + 1)) {
+                    const giornoSettimanaAttuale = d.getDay();
+                    
+                    if (d.getDate() > 1 && giornoSettimanaAttuale === 1) {
+                        numeroSettimana++;
+                    }
+                    
+                    const giorno = {
+                        data: new Date(d),
+                        giorno: d.getDate(),
+                        giornoSettimana: giornoSettimanaAttuale,
+                        numeroSettimana: numeroSettimana,
+                        isFestivo: false,
+                        isWeekend: false,
+                        nomeFestivo: ''
+                    };
+
+                    if (giorno.giornoSettimana === 0 || giorno.giornoSettimana === 6) {
+                        giorno.isWeekend = true;
+                        giorno.nomeFestivo = giorno.giornoSettimana === 0 ? 'Domenica' : 'Sabato';
+                    }
+
+                    const fest = this.festivitaFisse.find(f => f.mese === mese && f.giorno === giorno.giorno);
+                    if (fest) {
+                        giorno.isFestivo = true;
+                        giorno.nomeFestivo = fest.nome;
+                    }
+
+                    const pasquetta = this.calcolaPasquetta(anno);
+                    if (pasquetta.getMonth() + 1 === mese && pasquetta.getDate() === giorno.giorno) {
+                        giorno.isFestivo = true;
+                        giorno.nomeFestivo = 'Pasquetta';
+                    }
+
+                    giorni.push(giorno);
+                }
+
+                return giorni;
+            },
+            
+            calcolaPasquetta(anno) {
+                const a = anno % 19;
+                const b = Math.floor(anno / 100);
+                const c = anno % 100;
+                const d = Math.floor(b / 4);
+                const e = b % 4;
+                const f = Math.floor((b + 8) / 25);
+                const g = Math.floor((b - f + 1) / 3);
+                const h = (19 * a + b - d - g + 15) % 30;
+                const i = Math.floor(c / 4);
+                const k = c % 4;
+                const l = (32 + 2 * e + 2 * i - h - k) % 7;
+                const m = Math.floor((a + 11 * h + 22 * l) / 451);
+                const mese = Math.floor((h + l - 7 * m + 114) / 31);
+                const giorno = ((h + l - 7 * m + 114) % 31) + 1;
+                
+                const pasqua = new Date(anno, mese - 1, giorno);
+                const pasquetta = new Date(pasqua);
+                pasquetta.setDate(pasqua.getDate() + 1);
+                
+                return pasquetta;
+            },
+            
+            // Generazione configurazione
+            generaConfigurazione() {
+                const mese = parseInt(document.getElementById('meseSelect').value);
+                const anno = parseInt(document.getElementById('annoInput').value);
+
+                this.calendario = this.calcolaCalendario(mese, anno);
+                
+                const tuttiMedici = [...this.mediciUfficiali, ...this.consulenti];
+                tuttiMedici.forEach(medico => {
+                    if (!this.configurazione[medico]) {
+                        this.configurazione[medico] = {
+                            giorni: {},
+                            comportamentoSettimanale: {}
+                        };
+                    }
+                    
+                    // Assicurati che comportamentoSettimanale esista
+                    if (!this.configurazione[medico].comportamentoSettimanale) {
+                        this.configurazione[medico].comportamentoSettimanale = {};
+                    }
+                });
+
+                this.renderConfigurazione();
+                this.setupModalDate(); // Aggiorna date nel modal
+            },
+            
+            // Rendering
+            renderConfigurazione() {
+                const container = document.getElementById('configContainer');
+                container.innerHTML = '';
+
+                const tuttiMedici = [...this.mediciUfficiali, ...this.consulenti];
+                
+                tuttiMedici.forEach(medico => {
+                    const card = this.creaCardMedico(medico);
+                    container.appendChild(card);
+                });
+            },
+            
+            creaCardMedico(medico) {
+                const card = document.createElement('article');
+                card.className = 'medico-card';
+                if (this.consulenti.includes(medico)) {
+                    card.classList.add('consulente');
+                }
+                
+                card.id = `medico-${medico.toLowerCase()}`;
+                card.setAttribute('aria-labelledby', `medico-name-${medico}`);
+                card.setAttribute('aria-describedby', `medico-stats-${medico}`);
+
+                const stats = this.calcolaStatistiche(medico);
+                
+                card.innerHTML = `
+                    <div class="medico-header">
+                        <div class="medico-header-left">
+                            <h2 id="medico-name-${medico}" class="medico-name">${medico}</h2>
+                            <button class="btn-turni-fissi" 
+                                    onclick="app.apriModalTurniFissi('${medico}')"
+                                    aria-label="Configura turni fissi per ${medico}">
+                                🔧 Turni Fissi
+                            </button>
+                        </div>
+                        <div id="medico-stats-${medico}" class="medico-stats" aria-live="polite" aria-atomic="true">
+                            <div class="stat-item" role="status">
+                                <span class="stat-label">Preferenze</span>
+                                <span class="stat-value">${stats.preferenze}</span>
+                            </div>
+                            <div class="stat-item" role="status">
+                                <span class="stat-label">Obblighi</span>
+                                <span class="stat-value">${stats.obblighi}</span>
+                            </div>
+                            <div class="stat-item" role="status">
+                                <span class="stat-label">Veti</span>
+                                <span class="stat-value">${stats.veti}</span>
+                            </div>
+                            <div class="stat-item" role="status">
+                                <span class="stat-label">Congedi</span>
+                                <span class="stat-value">${stats.congedi}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                const festiviWeekend = this.calendario.filter(g => g.isFestivo || g.isWeekend);
+                if (festiviWeekend.length > 0) {
+                    const festiviSection = document.createElement('section');
+                    festiviSection.className = 'section';
+                    festiviSection.setAttribute('aria-label', 'Festivi e weekend');
+                    festiviSection.innerHTML = '<div class="section-title festivi">📅 Festivi & Weekend</div>';
+                    
+                    const grid = document.createElement('div');
+                    grid.className = 'giorni-grid';
+                    grid.setAttribute('role', 'list');
+                    grid.setAttribute('aria-label', 'Giorni festivi e weekend');
+                    
+                    festiviWeekend.forEach(giorno => {
+                        const giornoCard = this.creaGiornoCard(medico, giorno);
+                        giornoCard.setAttribute('role', 'listitem');
+                        grid.appendChild(giornoCard);
+                    });
+                    
+                    festiviSection.appendChild(grid);
+                    card.appendChild(festiviSection);
+                }
+
+                const settimane = {};
+                this.calendario.forEach(giorno => {
+                    if (!giorno.isFestivo && !giorno.isWeekend) {
+                        if (!settimane[giorno.numeroSettimana]) {
+                            settimane[giorno.numeroSettimana] = [];
+                        }
+                        settimane[giorno.numeroSettimana].push(giorno);
+                    }
+                });
+
+                Object.keys(settimane).sort().forEach(numSett => {
+                    const giorni = settimane[numSett];
+                    if (giorni.length === 0) return;
+
+                    const settSection = document.createElement('section');
+                    settSection.className = 'section';
+                    settSection.setAttribute('aria-label', `Settimana ${numSett}`);
+                    
+                    const primoGiorno = giorni[0].giorno;
+                    const ultimoGiorno = giorni[giorni.length - 1].giorno;
+                    
+                    settSection.innerHTML = `<div class="section-title settimana">📆 Settimana ${numSett} (${primoGiorno}-${ultimoGiorno})</div>`;
+                    
+                    const grid = document.createElement('div');
+                    grid.className = 'giorni-grid';
+                    grid.setAttribute('role', 'list');
+                    grid.setAttribute('aria-label', `Giorni della settimana ${numSett}`);
+                    
+                    giorni.forEach(giorno => {
+                        const giornoCard = this.creaGiornoCard(medico, giorno);
+                        giornoCard.setAttribute('role', 'listitem');
+                        grid.appendChild(giornoCard);
+                    });
+                    
+                    settSection.appendChild(grid);
+                    settSection.appendChild(this.creaComportamentoBox(medico, numSett));
+                    
+                    card.appendChild(settSection);
+                });
+
+                return card;
+            },
+            
+            creaGiornoCard(medico, giorno) {
+                const dateKey = this.formatDate(giorno.data);
+                
+                if (!this.configurazione[medico].giorni[dateKey]) {
+                    this.configurazione[medico].giorni[dateKey] = {
+                        M: null,
+                        P: null,
+                        N: null,
+                        congedo: false,
+                        alpi: false
+                    };
+                }
+
+                const config = this.configurazione[medico].giorni[dateKey];
+
+                const card = document.createElement('div');
+                card.className = 'giorno-card';
+                if (giorno.isFestivo) card.classList.add('festivo');
+                if (giorno.isWeekend) card.classList.add('weekend');
+                
+                card.setAttribute('aria-label', `Giorno ${giorno.giorno}, ${giorno.nomeFestivo || ''}`);
+
+                const nomiGiorni = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+                
+                const fasceHTML = ['M', 'P', 'N'].map(fascia => `
+                    <div class="fascia-row">
+                        <div class="fascia-label" id="label-${medico}-${dateKey}-${fascia}">${fascia}:</div>
+                        <div class="fascia-buttons" role="group" aria-labelledby="label-${medico}-${dateKey}-${fascia}">
+                            <button class="flag-btn ${config[fascia] === 'preferenza' ? 'active preferenza' : ''}" 
+                                    onclick="app.toggleFlag('${medico}', '${dateKey}', '${fascia}', 'preferenza')"
+                                    aria-pressed="${config[fascia] === 'preferenza'}"
+                                    aria-label="${fascia}: Preferenza">
+                                🟢 Pref
+                            </button>
+                            <button class="flag-btn ${config[fascia] === 'obbligo' ? 'active obbligo' : ''}" 
+                                    onclick="app.toggleFlag('${medico}', '${dateKey}', '${fascia}', 'obbligo')"
+                                    aria-pressed="${config[fascia] === 'obbligo'}"
+                                    aria-label="${fascia}: Obbligo">
+                                💎 Obbl
+                            </button>
+                            <button class="flag-btn ${config[fascia] === 'veto' ? 'active veto' : ''}" 
+                                    onclick="app.toggleFlag('${medico}', '${dateKey}', '${fascia}', 'veto')"
+                                    aria-pressed="${config[fascia] === 'veto'}"
+                                    aria-label="${fascia}: Veto">
+                                🔴 Veto
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                card.innerHTML = `
+                    <div class="giorno-header">
+                        <div class="giorno-data">${nomiGiorni[giorno.giornoSettimana]} ${giorno.giorno}</div>
+                        <div class="giorno-nome">${giorno.nomeFestivo || ''}</div>
+                    </div>
+                    <div class="fasce-container">
+                        ${fasceHTML}
+                    </div>
+                    <div class="congedo-container">
+                        <label class="congedo-label ${config.congedo ? 'active' : ''}">
+                            <input type="checkbox" 
+                                   ${config.congedo ? 'checked' : ''} 
+                                   onchange="app.toggleCongedo('${medico}', '${dateKey}', this.checked)"
+                                   aria-label="Congedo per ${nomiGiorni[giorno.giornoSettimana]} ${giorno.giorno}">
+                            📋 Congedo (conta 1 turno)
+                        </label>
+                        <label class="alpi-label ${config.alpi ? 'active' : ''}">
+                            <input type="checkbox" 
+                                   ${config.alpi ? 'checked' : ''} 
+                                   onchange="app.toggleAlpi('${medico}', '${dateKey}', this.checked)"
+                                   aria-label="Turno in ALPI per ${nomiGiorni[giorno.giornoSettimana]} ${giorno.giorno}">
+                            🟡 Turno in ALPI
+                        </label>
+                    </div>
+                `;
+
+                return card;
+            },
+            
+            creaComportamentoBox(medico, numeroSettimana) {
+                const key = `sett${numeroSettimana}`;
+                
+                // CONTROLLO DI COMPATIBILITÀ: assicura che la struttura sia completa
+                this.assicuraStrutturaComportamentoCompleta(medico, key);
+                
+                const comp = this.configurazione[medico].comportamentoSettimanale[key];
+
+                const box = document.createElement('div');
+                box.className = 'comportamento-box';
+                box.setAttribute('aria-label', 'Comportamento settimanale');
+                box.innerHTML = `
+                    <div class="comportamento-title">⚙️ Comportamento Settimanale</div>
+                    <div class="comportamento-row">
+                        <label>
+                            <input type="checkbox" 
+                                   ${comp.mattineConsecutive.attivo ? 'checked' : ''} 
+                                   onchange="app.toggleComportamento('${medico}', '${key}', 'mattineConsecutive', 'attivo', this.checked)"
+                                   aria-label="Attiva limite mattine consecutive">
+                            Mattine consecutive max:
+                        </label>
+                        <input type="number" 
+                               min="1" 
+                               max="7" 
+                               value="${comp.mattineConsecutive.max}" 
+                               onchange="app.toggleComportamento('${medico}', '${key}', 'mattineConsecutive', 'max', this.value)"
+                               aria-label="Massimo numero di mattine consecutive">
+                    </div>
+                    <div class="comportamento-row">
+                        <label>
+                            <input type="checkbox" 
+                                   ${comp.pomeriggiConsecutivi.attivo ? 'checked' : ''} 
+                                   onchange="app.toggleComportamento('${medico}', '${key}', 'pomeriggiConsecutivi', 'attivo', this.checked)"
+                                   aria-label="Attiva limite pomeriggi consecutive">
+                            Pomeriggi consecutivi max:
+                        </label>
+                        <input type="number" 
+                               min="1" 
+                               max="7" 
+                               value="${comp.pomeriggiConsecutivi.max}" 
+                               onchange="app.toggleComportamento('${medico}', '${key}', 'pomeriggiConsecutivi', 'max', this.value)"
+                               aria-label="Massimo numero di pomeriggi consecutivi">
+                    </div>
+                    <div class="comportamento-row">
+                        <label>
+                            <input type="checkbox" 
+                                   ${comp.mpConsecutivi.attivo ? 'checked' : ''} 
+                                   onchange="app.toggleComportamento('${medico}', '${key}', 'mpConsecutivi', 'attivo', this.checked)"
+                                   aria-label="Attiva limite turni mattina e pomeriggio consecutivi">
+                            M+P consecutivi max:
+                        </label>
+                        <input type="number" 
+                               min="1" 
+                               max="7" 
+                               value="${comp.mpConsecutivi.max}" 
+                               onchange="app.toggleComportamento('${medico}', '${key}', 'mpConsecutivi', 'max', this.value)"
+                               aria-label="Massimo numero di turni mattina e pomeriggio consecutivi">
+                    </div>
+                    <div class="comportamento-row">
+                        <label>
+                            <input type="checkbox" 
+                                   ${comp.nottiConsecutive.attivo ? 'checked' : ''} 
+                                   onchange="app.toggleComportamento('${medico}', '${key}', 'nottiConsecutive', 'attivo', this.checked)"
+                                   aria-label="Attiva limite notti consecutive">
+                            Notti consecutive max:
+                        </label>
+                        <input type="number" 
+                               min="1" 
+                               max="7" 
+                               value="${comp.nottiConsecutive.max}" 
+                               onchange="app.toggleComportamento('${medico}', '${key}', 'nottiConsecutive', 'max', this.value)"
+                               aria-label="Massimo numero di notti consecutive">
+                    </div>
+                `;
+
+                return box;
+            },
+            
+            // Funzione per assicurare struttura comportamento completa
+            assicuraStrutturaComportamentoCompleta(medico, key) {
+                // 1. Assicurati che comportamentoSettimanale esista
+                if (!this.configurazione[medico].comportamentoSettimanale) {
+                    this.configurazione[medico].comportamentoSettimanale = {};
+                }
+                
+                // 2. Assicurati che la settimana specifica esista
+                if (!this.configurazione[medico].comportamentoSettimanale[key]) {
+                    this.configurazione[medico].comportamentoSettimanale[key] = {};
+                }
+                
+                const settimana = this.configurazione[medico].comportamentoSettimanale[key];
+                
+                // 3. Assicurati che tutte le proprietà esistano con valori di default
+                Object.keys(this.strutturaComportamentoCompleta).forEach(prop => {
+                    if (!settimana[prop]) {
+                        // Copia la struttura completa con valori di default
+                        settimana[prop] = JSON.parse(JSON.stringify(this.strutturaComportamentoCompleta[prop]));
+                    } else {
+                        // Assicurati che le sottoproprietà esistano
+                        if (!settimana[prop].attivo) {
+                            settimana[prop].attivo = this.strutturaComportamentoCompleta[prop].attivo;
+                        }
+                        if (!settimana[prop].max) {
+                            settimana[prop].max = this.strutturaComportamentoCompleta[prop].max;
+                        }
+                    }
+                });
+            },
+            
+            // Interazioni
+            toggleFlag(medico, dateKey, fascia, tipo) {
+                const current = this.configurazione[medico].giorni[dateKey][fascia];
+                
+                if (current === tipo) {
+                    this.configurazione[medico].giorni[dateKey][fascia] = null;
+                } else {
+                    this.configurazione[medico].giorni[dateKey][fascia] = tipo;
+                }
+
+                this.salvaInLocalStorage();
+                this.renderConfigurazione();
+                
+                // Feedback per screen reader
+                this.announceChange(`${fascia}: ${tipo} ${current === tipo ? 'rimosso' : 'impostato'} per ${medico}`);
+            },
+            
+            toggleCongedo(medico, dateKey, checked) {
+                this.configurazione[medico].giorni[dateKey].congedo = checked;
+                this.salvaInLocalStorage();
+                this.renderConfigurazione();
+                this.announceChange(`Congedo ${checked ? 'attivato' : 'disattivato'} per ${medico}`);
+            },
+            
+            toggleAlpi(medico, dateKey, checked) {
+                this.configurazione[medico].giorni[dateKey].alpi = checked;
+                this.salvaInLocalStorage();
+                this.renderConfigurazione();
+                this.announceChange(`Turno ALPI ${checked ? 'attivato' : 'disattivato'} per ${medico}`);
+            },
+            
+            toggleComportamento(medico, key, tipo, campo, valore) {
+                // Assicura struttura completa prima di modificare
+                this.assicuraStrutturaComportamentoCompleta(medico, key);
+                
+                if (campo === 'attivo') {
+                    this.configurazione[medico].comportamentoSettimanale[key][tipo].attivo = valore;
+                } else {
+                    this.configurazione[medico].comportamentoSettimanale[key][tipo].max = parseInt(valore);
+                }
+                this.salvaInLocalStorage();
+            },
+            
+            // Annuncia cambiamenti a screen reader
+            announceChange(message) {
+                const announcement = document.createElement('div');
+                announcement.setAttribute('aria-live', 'polite');
+                announcement.setAttribute('aria-atomic', 'true');
+                announcement.className = 'sr-only';
+                announcement.textContent = message;
+                document.body.appendChild(announcement);
+                setTimeout(() => document.body.removeChild(announcement), 1000);
+            },
+            
+            // Modal turni fissi
+            apriModalTurniFissi(medico) {
+                this.currentModalMedico = medico;
+                document.getElementById('modalMedicoName').textContent = medico;
+                const modal = document.getElementById('modalTurniFissi');
+                modal.classList.add('active');
+                
+                // Reset messaggi
+                this.resetModalMessage();
+                
+                // Gestione focus
+                setTimeout(() => {
+                    modal.focus();
+                    const firstFocusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                    if (firstFocusable) firstFocusable.focus();
+                }, 100);
+            },
+            
+            chiudiModalTurniFissi() {
+                const modal = document.getElementById('modalTurniFissi');
+                modal.classList.remove('active');
+                this.currentModalMedico = null;
+                this.resetModalMessage();
+                
+                // Riporta focus al pulsante che ha aperto il modal
+                const lastFocused = document.activeElement;
+                if (lastFocused && lastFocused.classList.contains('btn-turni-fissi')) {
+                    lastFocused.focus();
+                }
+            },
+            
+            resetModalMessage() {
+                const messageDiv = document.getElementById('modalMessage');
+                messageDiv.className = 'modal-message';
+                messageDiv.textContent = '';
+                messageDiv.style.display = 'none';
+            },
+            
+            showModalMessage(text, type = 'success') {
+                const messageDiv = document.getElementById('modalMessage');
+                messageDiv.className = `modal-message ${type}`;
+                messageDiv.textContent = text;
+                messageDiv.style.display = 'block';
+                
+                // Scrolla al messaggio
+                messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            },
+            
+            // Applica turni fissi per giorno della settimana
+            applicaTurniFissiSettimanali() {
+                if (!this.currentModalMedico) return;
+                
+                const giornoSettimana = parseInt(document.getElementById('modalGiorno').value);
+                const fascia = document.getElementById('modalFascia').value;
+                const tipo = document.getElementById('modalTipo').value;
+                
+                let count = 0;
+                
+                this.calendario.forEach(giorno => {
+                    if (giorno.giornoSettimana === giornoSettimana) {
+                        const dateKey = this.formatDate(giorno.data);
+                        
+                        if (!this.configurazione[this.currentModalMedico].giorni[dateKey]) {
+                            this.configurazione[this.currentModalMedico].giorni[dateKey] = {
+                                M: null, P: null, N: null, congedo: false, alpi: false
+                            };
+                        }
+                        
+                        this.configurazione[this.currentModalMedico].giorni[dateKey][fascia] = tipo;
+                        count++;
+                    }
+                });
+                
+                this.salvaInLocalStorage();
+                this.renderConfigurazione();
+                
+                const nomiGiorni = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+                const nomiFasce = {M: 'Mattina', P: 'Pomeriggio', N: 'Notte'};
+                const nomiTipi = {preferenza: 'Preferenza', obbligo: 'Obbligo', veto: 'Veto'};
+                
+                this.showModalMessage(
+                    `✅ Applicato "${nomiTipi[tipo]}" a ${count} turni di ${nomiFasce[fascia]} dei ${nomiGiorni[giornoSettimana]} per ${this.currentModalMedico}`,
+                    'success'
+                );
+                
+                // Salva l'ultima configurazione applicata
+                this.lastAppliedConfig = {
+                    tipo: 'settimanale',
+                    giornoSettimana,
+                    fascia,
+                    tipoFlag: tipo,
+                    count
+                };
+            },
+            
+            // Applica turno fisso per data specifica
+            applicaTurnoFissoSpecifico() {
+                if (!this.currentModalMedico) return;
+                
+                const dataInput = document.getElementById('modalDataSpecifica').value;
+                const fascia = document.getElementById('modalFasciaSpecifica').value;
+                const tipo = document.getElementById('modalTipoSpecifico').value;
+                
+                if (!dataInput) {
+                    this.showModalMessage('❌ Seleziona una data specifica', 'error');
+                    return;
+                }
+                
+                // Converte la data
+                const data = new Date(dataInput + 'T00:00:00');
+                const meseSelezionato = parseInt(document.getElementById('meseSelect').value);
+                const annoSelezionato = parseInt(document.getElementById('annoInput').value);
+                
+                // Verifica che la data sia nel mese corrente
+                if (data.getMonth() + 1 !== meseSelezionato || data.getFullYear() !== annoSelezionato) {
+                    this.showModalMessage(`❌ La data deve essere nel mese selezionato (${meseSelezionato}/${annoSelezionato})`, 'error');
+                    return;
+                }
+                
+                const dateKey = this.formatDate(data);
+                
+                if (!this.configurazione[this.currentModalMedico].giorni[dateKey]) {
+                    this.configurazione[this.currentModalMedico].giorni[dateKey] = {
+                        M: null, P: null, N: null, congedo: false, alpi: false
+                    };
+                }
+                
+                this.configurazione[this.currentModalMedico].giorni[dateKey][fascia] = tipo;
+                
+                this.salvaInLocalStorage();
+                this.renderConfigurazione();
+                
+                const nomiFasce = {M: 'Mattina', P: 'Pomeriggio', N: 'Notte'};
+                const nomiTipi = {preferenza: 'Preferenza', obbligo: 'Obbligo', veto: 'Veto'};
+                const giorno = data.getDate();
+                const mese = data.getMonth() + 1;
+                
+                this.showModalMessage(
+                    `✅ Applicato "${nomiTipi[tipo]}" per ${nomiFasce[fascia]} del ${giorno}/${mese} a ${this.currentModalMedico}`,
+                    'success'
+                );
+                
+                // Salva l'ultima configurazione applicata
+                this.lastAppliedConfig = {
+                    tipo: 'specifico',
+                    data: dataInput,
+                    fascia,
+                    tipoFlag: tipo
+                };
+            },
+            
+            // Applica e mantieni aperto
+            applicaETieniAperto() {
+                const tabAttivo = document.querySelector('.modal-tab.active').id;
+                
+                if (tabAttivo === 'tabSettimanale') {
+                    this.applicaTurniFissiSettimanali();
+                } else {
+                    this.applicaTurnoFissoSpecifico();
+                }
+                
+                // Mantiene il focus nel modal
+                setTimeout(() => {
+                    const modal = document.getElementById('modalTurniFissi');
+                    const firstFocusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                    if (firstFocusable) firstFocusable.focus();
+                }, 100);
+            },
+            
+            // Statistiche
+            calcolaStatistiche(medico) {
+                const stats = {
+                    preferenze: 0,
+                    obblighi: 0,
+                    veti: 0,
+                    congedi: 0
+                };
+
+                const giorni = this.configurazione[medico].giorni;
+                Object.keys(giorni).forEach(dateKey => {
+                    const g = giorni[dateKey];
+                    ['M', 'P', 'N'].forEach(fascia => {
+                        if (g[fascia] === 'preferenza') stats.preferenze++;
+                        if (g[fascia] === 'obbligo') stats.obblighi++;
+                        if (g[fascia] === 'veto') stats.veti++;
+                    });
+                    if (g.congedo) stats.congedi++;
+                });
+
+                return stats;
+            },
+            
+            // Storage - con compatibilità per vecchie versioni
+            salvaConfigurazione() {
+                // Prima di salvare, assicura che tutte le strutture siano complete
+                this.normalizzaStrutturePerSalvataggio();
+                this.salvaInLocalStorage();
+                this.announceChange('Configurazione salvata con successo');
+                alert('✅ Configurazione salvata!');
+            },
+            
+            normalizzaStrutturePerSalvataggio() {
+                const tuttiMedici = [...this.mediciUfficiali, ...this.consulenti];
+                
+                tuttiMedici.forEach(medico => {
+                    if (this.configurazione[medico]) {
+                        // Normalizza comportamento settimanale per tutte le settimane
+                        const settimaneKeys = Object.keys(this.configurazione[medico].comportamentoSettimanale || {});
+                        settimaneKeys.forEach(key => {
+                            this.assicuraStrutturaComportamentoCompleta(medico, key);
+                        });
+                    }
+                });
+            },
+            
+            salvaInLocalStorage() {
+                const mese = document.getElementById('meseSelect').value;
+                const anno = document.getElementById('annoInput').value;
+                
+                const data = {
+                    mese,
+                    anno,
+                    configurazione: this.configurazione,
+                    timestamp: Date.now(),
+                    versione: '2.0' // Aggiunto per tracciare versioni
+                };
+                
+                localStorage.setItem('config_staff_turni', JSON.stringify(data));
+            },
+            
+            caricaDaLocalStorage() {
+                const saved = localStorage.getItem('config_staff_turni');
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        this.configurazione = data.configurazione || {};
+                        
+                        // Migra le vecchie configurazioni
+                        this.migraVecchieConfigurazioni();
+                        
+                        if (data.mese) document.getElementById('meseSelect').value = data.mese;
+                        if (data.anno) document.getElementById('annoInput').value = data.anno;
+                    } catch(e) {
+                        console.error('Errore caricamento:', e);
+                    }
+                }
+            },
+            
+            // Migra configurazioni vecchie alla nuova struttura
+            migraVecchieConfigurazioni() {
+                const tuttiMedici = [...this.mediciUfficiali, ...this.consulenti];
+                
+                tuttiMedici.forEach(medico => {
+                    if (this.configurazione[medico]) {
+                        // Assicurati che comportamentoSettimanale esista
+                        if (!this.configurazione[medico].comportamentoSettimanale) {
+                            this.configurazione[medico].comportamentoSettimanale = {};
+                        }
+                        
+                        // Migra tutte le settimane
+                        const settimaneKeys = Object.keys(this.configurazione[medico].comportamentoSettimanale);
+                        settimaneKeys.forEach(key => {
+                            this.assicuraStrutturaComportamentoCompleta(medico, key);
+                        });
+                    }
+                });
+            },
+            
+            // Export/Import
+            esportaJSON() {
+                const mese = document.getElementById('meseSelect').value;
+                const anno = document.getElementById('annoInput').value;
+                const timestamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0].replace('T', '_');
+
+                const exportData = {
+                    mese: parseInt(mese),
+                    anno: parseInt(anno),
+                    timestamp,
+                    configurazione: this.configurazione,
+                    calendario: this.calendario.map(g => ({
+                        data: this.formatDate(g.data),
+                        giorno: g.giorno,
+                        giornoSettimana: g.giornoSettimana,
+                        numeroSettimana: g.numeroSettimana,
+                        isFestivo: g.isFestivo,
+                        isWeekend: g.isWeekend,
+                        nomeFestivo: g.nomeFestivo
+                    })),
+                    statistiche: {},
+                    versione: '2.0'
+                };
+
+                const tuttiMedici = [...this.mediciUfficiali, ...this.consulenti];
+                tuttiMedici.forEach(medico => {
+                    exportData.statistiche[medico] = this.calcolaStatistiche(medico);
+                });
+
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `desiderata_${String(mese).padStart(2,'0')}_${anno}_${timestamp}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                this.announceChange('File JSON esportato con successo');
+                alert('📤 File JSON esportato!');
+            },
+            
+            importaJSON() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = e => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = ev => {
+                        try {
+                            const data = JSON.parse(ev.target.result);
+                            
+                            if (!data.configurazione) {
+                                alert('❌ File non valido');
+                                return;
+                            }
+
+                            if (confirm('⚠️ Sovrascrivere la configurazione attuale?')) {
+                                this.configurazione = data.configurazione;
+                                
+                                // Migra le configurazioni importate
+                                this.migraVecchieConfigurazioni();
+                                
+                                if (data.mese) document.getElementById('meseSelect').value = data.mese;
+                                if (data.anno) document.getElementById('annoInput').value = data.anno;
+                                
+                                this.generaConfigurazione();
+                                this.salvaInLocalStorage();
+                                
+                                this.announceChange('Configurazione importata con successo');
+                                alert('✅ Configurazione importata!');
+                            }
+                        } catch(err) {
+                            alert('❌ Errore: ' + err.message);
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                input.click();
+            },
+            
+            // Utility
+            formatDate(date) {
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            }
+        };
+
+        // Avvio applicazione
+        window.addEventListener('DOMContentLoaded', () => {
+            app.init();
+            console.log('✅ Applicazione caricata con compatibilità migliorata');
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                app.salvaConfigurazione();
+            }
+            
+            if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                e.preventDefault();
+                app.esportaJSON();
+            }
+            
+            if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+                e.preventDefault();
+                app.importaJSON();
+            }
+            
+            // Focus management per accessibilità
+            if (e.key === 'Tab') {
+                const focused = document.activeElement;
+                if (focused) {
+                    focused.classList.add('focus-visible');
+                }
+            }
+        });
+        
+        // Rimuove la classe focus-visible quando si clicca con il mouse
+        document.addEventListener('mousedown', () => {
+            document.querySelectorAll('.focus-visible').forEach(el => {
+                el.classList.remove('focus-visible');
+            });
+        });
+    </script>
+</body>
+</html>
